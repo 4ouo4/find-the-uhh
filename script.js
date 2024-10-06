@@ -36,66 +36,52 @@ let creator = document.querySelector("#creator");
 const soundUhh = new Audio("sounds/uhh.mp3");
 
 //OPTION FILES
-let objectPairs = {
-    "Bob": {
-        name: "Bob", 
+const objectPairsMap = new Map([
+    ["Bob", {
         img: "images/bob.gif",
-        sound: new Audio("sounds/bobScream.mp3"), 
-        found: new Audio("sounds/bobFound.mp3"), 
-    },
-    "Cow": {
-        name: "Cow", 
+        sound: new Audio("sounds/bobScream.mp3"),
+        found: new Audio("sounds/bobFound.mp3"),
+    }],
+    ["Cow", {
         img: "images/cow.gif",
         sound: new Audio("sounds/cowScream.mp3"),
         found: new Audio("sounds/cowFound.mp3"),
-    },
-    "Crocodile": {
-        name: "Crocodile",
+    }],
+    ["Crocodile", {
         img: "images/croc.gif",
         sound: new Audio("sounds/crocScream.mp3"),
         found: new Audio("sounds/crocFound.mp3"),
-    },
-    "Cat": {
-        name: "Cat",
+    }],
+    ["Cat", {
         img: "images/cat.gif",
         sound: new Audio("sounds/catScream.mp3"),
         found: new Audio("sounds/catFound.mp3"),
-    },
-    "Bred": {
-        name: "Bred-wip",
+    }],
+    ["Bred-wip", {
         img: "images/bred.gif",
         sound: new Audio(),
         found: new Audio(),
-    },
-    "Bear": {
-        name: "Bear",
+    }],
+    ["Bear", {
         img: "images/bear.gif",
         sound: new Audio("sounds/bearScream.mp3"),
         found: new Audio("sounds/bearFound.mp3"),
-    },
-    "Dog": {
-        name: "Dog",
+    }],
+    ["Dog", {
         img: "images/dog.gif",
         sound: new Audio("sounds/dogScream.mp3"),
         found: new Audio("sounds/dogFound.mp3"),
-    },
-    "Shoebill": {
-        name: "Shoebill",
+    }],
+    ["Shoebill", {
         img: "images/shoebill.gif",
         sound: new Audio("sounds/shoebillScream.mp3"),
         found: new Audio("sounds/shoebillFound.mp3"),
-    },
-
-};
+    }],
+]);
 
 //SCRIPTS
 //SELECTION/OPTION CREATION
-let sortedOpts = [];
-for (const objName in objectPairs) {
-    sortedOpts.push(objectPairs[objName].name);
-};
-sortedOpts.sort();
-sortedOpts.map((value, _) => createOpt(value));
+[...objectPairsMap.keys()].sort().map(name => createOpt(name));
 
 function createOpt(value) {
     const newOption = document.createElement("option");
@@ -106,29 +92,26 @@ function createOpt(value) {
 
 //submitForm FUNCTION
     let selected = "Uhh";
-    function submitForm(value) {
-        let selectedOpt = formName.value;
-        objectPairs[selectedOpt] = {};
-        objectPairs[selectedOpt].name = formName.value;
+    function submitForm() {
+        objectPairsMap.set(formName.value, {
+            img: formPhoto.value,
+            sound: new Audio(formSound.value),
+            found: new Audio(formFound.value),
+        })
         createOpt(formName.value);
         formName.value = "";
-
-        objectPairs[selectedOpt].img = formPhoto.value;
-        objectPairs[selectedOpt].sound = new Audio(formSound.value);
-        objectPairs[selectedOpt].found = new Audio(formFound.value);
-
         formPhoto.value = "";
         formSound.value = "";
         formFound.value = "";
     };
 
     formSubmit.addEventListener("click", () => {
-        submitForm(formName.value);
+        submitForm();
     });
 
 //UPDATE CENTER
 selectDiv.addEventListener("click", () => updateCenter(itemSelect.value));
-function updateCenter(value) {
+function updateCenter() {
     if (itemSelect.value == "noSelect") {
         selectedItem.textContent = "Uhh";
     } else {
@@ -159,13 +142,13 @@ function updateHeader() {
     header.appendChild(playHeader);
 };
 
-//CALULATE VOLUME SPECTRUM
+//CALCULATE VOLUME SPECTRUM
 function calculateVolume(distance, maxDistance) {
     const normalizedDistance = Math.min(distance, maxDistance) / maxDistance;
     return 1 - normalizedDistance; // adjust formula as needed for your desired effect
 };
 
-//UPDATE MOUSE EVENET
+//UPDATE MOUSE EVENT
 function updateMouseEvent(event, audio, playImg) {
     const mouseX = event.clientX;
     const mouseY = event.clientY;
@@ -255,6 +238,6 @@ function endGame(playImg, audioFound) {
 
 //GAME START BUTTON
 start.addEventListener("click", () => {
-    let selectedOpt = objectPairs[itemSelect.value];
+    let selectedOpt = objectPairsMap.get(itemSelect.value);
     play(selectedOpt.img, selectedOpt.sound, selectedOpt.found)
 }); 
